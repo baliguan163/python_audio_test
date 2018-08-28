@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from pydub import AudioSegment
-import wave
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import os.path
+from pydub import AudioSegment ###需要安装pydub、ffmpeg
+import wave
+import io
 
 # 把mp3路径扔进去，就能输出一个now.wav文件
 def trans_mp3_to_wav(mp3filepath,wavfilepath):
@@ -14,6 +15,25 @@ def trans_mp3_to_wav(mp3filepath,wavfilepath):
 
 def file_extension(path):
   return os.path.splitext(path)[1]
+
+
+def mp3_to_wav(mp3filepath,wavfilepath):
+    #先从本地获取mp3的bytestring作为数据样本
+    fp=open(mp3filepath,'rb')
+    data=fp.read()
+    fp.close()
+    aud=io.BytesIO(data)
+    sound=AudioSegment.from_file(aud,format='mp3')
+    raw_data = sound._data
+    #写入到文件，验证结果是否正确。
+    l=len(raw_data)
+    f=wave.open(wavfilepath,'wb')
+    f.setnchannels(1)
+    f.setsampwidth(2)
+    f.setframerate(16000)
+    f.setnframes(l)
+    f.writeframes(raw_data)
+    f.close()
 
 # filepath = "chinese\\" #添加路径
 filepath = r"E:\\raw\\newRaw\\raw\\" #添加路径
@@ -27,9 +47,10 @@ for file in filename:
     if filesuffix == '.mp3':
         path = filepath+file
         j+=1
-        wavfile = "D:\\python\\python_audio_test\\testfile\\"+ filename + ".wav"
+        wavfile = "D:\\python\\python_audio_test\\testfile\\"+ str(j) + "_mp3_wav_" +filename + ".wav"
         print(j,"mp3:"+ path," wav:",wavfile)
-        trans_mp3_to_wav(path,wavfile)
+        #trans_mp3_to_wav(path,wavfile)
+        #mp3_to_wav(path,wavfile)
 
         # try:
         #     #打开wav文件 ，open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据。
