@@ -8,11 +8,13 @@ import os
 filepath = "E:\\raw\\raw\\test\\" #添加路径
 filename= os.listdir(filepath) #得到文件夹下的所有文件名称
 for file in filename:
-    print('file:' + filepath+file)
+    print('path:' + filepath+file)
+
 print("get:"+filepath+filename[0])
 f = wave.open(filepath+filename[0],'rb')
 params = f.getparams()
 print(params)
+
 nchannels, sampwidth, framerate, nframes = params[:4]
 #常用的音频参数：nchannels:声道数sampwidth:量化位数（byte）framerate:采样频率nframes:采样点数
 print("nchannels:",nchannels," ",sampwidth," ",framerate," ",nframes)

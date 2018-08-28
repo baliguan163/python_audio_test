@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 import pylab
+
+
 pylab.subplot(1, 3, 1);
 pylab.axis('off');
 pylab.imshow(img)
