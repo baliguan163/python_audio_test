@@ -1,11 +1,30 @@
-
+import shutil
 import wave
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+global fail
+global ok
+fail=0
+ok=0
+
+def deleteNullFile(src):
+    '''删除所有大小为0的文件'''
+    files = os.listdir(src)
+    k=0
+    for file in files:
+        print('path:' + src + file)
+        if os.path.getsize(file) == 0:   #获取文件大小
+            print(file)
+            os.remove(file)
+            k+=1
+            print(k," deleted." + file)
+
 # 从2channel，4.41k hz 重采样到 1 channel，16k hz
 def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchannels=1):
+    global ok
+    global fail
     import os,wave,audioop
     if not os.path.exists(src):
         print ('Source not found!')
@@ -14,7 +33,6 @@ def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchanne
         os.makedirs(os.path.dirname(dst))
     try:
         s_read = wave.open(src, 'r')
-        s_write = wave.open(dst, 'w')
     except:
         print ('Failed to open files!')
         return False
@@ -34,34 +52,59 @@ def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchanne
 # audioop.tomono(fragment, width, lfactor, rfactor)
 # 将立体声片段转换为单声道片段。左声道乘以lfactor，右声道乘以rfactor，然后再添加两个声道以提供单声道信号。
     except:
-        print ('Failed to downsample wav')
+        fail += 1
+        print(fail,'Failed to downsample wav',src, dst)
+        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
         return False
     try:
+        s_write = wave.open(dst, 'w')
         s_write.setparams((outchannels, 2, outrate, 0, 'NONE', 'Uncompressed'))
         s_write.writeframes(converted)
     except:
+        s_write.close()
         print ('Failed to write wav')
         return False
-
     try:
         s_read.close()
         s_write.close()
     except:
         print ('Failed to close wav files')
         return False
+
+    ok+=1
+    print(ok,'转换成功:',src, dst)
     return True
 
 def file_extension(path):
   return os.path.splitext(path)[1]
+
+# 清空目录
+def del_file(path):
+    ls = os.listdir(path)
+    for i in ls:
+        c_path = os.path.join(path, i)
+        if os.path.isdir(c_path):
+            del_file(c_path)
+        else:
+            os.remove(c_path)
+
 
 # filepath = "chinese\\" #添加路径
 filepath = r"E:\\raw\\newRaw\\raw\\" #添加路径
 filename= os.listdir(filepath) #得到文件夹下的所有文件名称
 i=0
 j=0
+del_file("E:\\raw\\44100_to_16000\\44100_exception\\")
+del_file("E:\\raw\\44100_to_16000\\44100\\")
+del_file("E:\\raw\\44100_to_16000\\16000\\")
+del_file("E:\\raw\\44100_to_16000\\16000_exception\\")
 for file in filename:
     path = filepath+file
     filename =file.split(".")[0] #以“.”为分割点获取文件名
+    outpath44100_exception = "E:\\raw\\44100_to_16000\\44100_exception\\" + filename + ".wav"
+    outpath44100 = "E:\\raw\\44100_to_16000\\44100\\" + filename + ".wav"
+    outpath1600_exception = "E:\\raw\\44100_to_16000\\16000_exception\\" + filename + ".wav"
+    outpath16000 = "E:\\raw\\44100_to_16000\\16000\\" + filename + ".wav"
     try:
         #打开wav文件 ，open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据。
         f = wave.open(path,"rb")
@@ -74,22 +117,23 @@ for file in filename:
         if framerate == 44100:
             i+=1
             # print('------------',i,'-------------')
-            outpath= "16k\\"+str(i)+"_16k_"+filename + ".wav"
-            print(i,'路径:' + path)
-            print("声道数:",nchannels)
-            print("量化位数:",sampwidth)
-            print("输出文件:",outpath)
+            # print(i, '文件路径:' + path, outpath44100, outpath16000)
+            # print("声道数:",nchannels)
+            # print("量化位数:",sampwidth)
+            # print("输出文件:",outpath)
             # print("采样频率:",framerate)
             # print("采样点数:",nframes)
             #读取波形数据
             #读取声音数据，传递一个参数指定需要读取的长度（以取样点为单位）
             #str_data  = f.readframes(nframes)
             #print("声音数据:",len(str_data))
-            downsampleWav(path,outpath)
+            shutil.copyfile(path, outpath44100)  # 拷贝文件
+            downsampleWav(path, outpath16000)
         f.close()
     except Exception:
         j+=1
-        # print(j,"读取wav异常文件:"+ path)
-
-
-
+        shutil.copyfile(path, outpath44100_exception)  # 拷贝文件
+        #print(j,'异常文件:' + path,outpath44100,outpath16000)
+print('-------------------------------------------------')
+# delete16000 = "E:\\raw\\44100_to_16000\\16000\\"
+# deleteNullFile(delete16000);

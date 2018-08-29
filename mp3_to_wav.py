@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -47,10 +48,13 @@ for file in filename:
     if filesuffix == '.mp3':
         path = filepath+file
         j+=1
-        wavfile = "D:\\python\\python_audio_test\\testfile\\"+ str(j) + "_mp3_wav_" +filename + ".wav"
-        print(j,"mp3:"+ path," wav:",wavfile)
+        mp3file = "E:\\raw\\mp3\\mp3\\" + filename + ".mp3"
+        wavfile = "E:\\raw\mp3\\mp3_to_wav\\" + filename + ".wav"
+        print(j,"mp3:"+ path," mp3:",mp3file," wav:",wavfile)
+        shutil.copyfile(path, mp3file) #拷贝文件
         #trans_mp3_to_wav(path,wavfile)
-        #mp3_to_wav(path,wavfile)
+        mp3_to_wav(path,wavfile)
+
 
         # try:
         #     #打开wav文件 ，open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据。
