@@ -1,7 +1,7 @@
 import shutil
 import wave
-import matplotlib.pyplot as plt
-import numpy as np
+# import matplotlib.pyplot as plt
+# import numpy as np
 import os
 
 global fail
@@ -22,7 +22,7 @@ def deleteNullFile(src):
             print(k," deleted." + file)
 
 # 从2channel，4.41k hz 重采样到 1 channel，16k hz
-def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchannels=1):
+def downsampleWav2_1(src, dst, inrate=44100, outrate=16000, inchannels=2, outchannels=1):
     global ok
     global fail
     import os,wave,audioop
@@ -35,6 +35,7 @@ def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchanne
         s_read = wave.open(src, 'r')
     except:
         print ('Failed to open files!')
+        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
         return False
 
     n_frames = s_read.getnframes()
@@ -48,7 +49,7 @@ def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchanne
     try:
         converted = audioop.ratecv(data,2,inchannels, inrate, outrate, None)
         if outchannels == 1:
-            converted = audioop.tomono(converted[0], 2, 1, 0)
+            converted = audioop.tomono(converted[0], 2, 1, 1)
 # audioop.tomono(fragment, width, lfactor, rfactor)
 # 将立体声片段转换为单声道片段。左声道乘以lfactor，右声道乘以rfactor，然后再添加两个声道以提供单声道信号。
     except:
@@ -58,22 +59,80 @@ def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchanne
         return False
     try:
         s_write = wave.open(dst, 'w')
-        s_write.setparams((outchannels, 2, outrate, 0, 'NONE', 'Uncompressed'))
+        s_write.setparams((outchannels, 1, outrate, 0, 'NONE', 'Uncompressed'))
         s_write.writeframes(converted)
     except:
         s_write.close()
         print ('Failed to write wav')
+        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
         return False
     try:
         s_read.close()
         s_write.close()
     except:
         print ('Failed to close wav files')
+        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
         return False
 
     ok+=1
     print(ok,'转换成功:',src, dst)
     return True
+
+
+# 若in和out都是单通道：
+def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchannels=1):
+    global ok
+    global fail
+    import os, wave, audioop
+    if not os.path.exists(src):
+        print('Source not found!')
+        return False
+    if not os.path.exists(os.path.dirname(dst)):
+        os.makedirs(os.path.dirname(dst))
+    try:
+        s_read = wave.open(src, 'rb')
+        params = s_read.getparams()
+        nchannels, sampwidth, framerate, nframes = params[:4]
+        # print(nchannels, sampwidth, framerate, nframes)
+    except:
+        print('Failed to open files!')
+        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
+        return False
+
+    n_frames = s_read.getnframes()
+    data = s_read.readframes(n_frames)
+    try:
+        converted = audioop.ratecv(data, 2, inchannels, inrate, outrate, None)
+        if outchannels == 1 and inchannels != 1:
+            converted = audioop.tomono(converted[0], 2, 1, 0)
+    except:
+        print('Failed to downsample wav')
+        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
+        return False
+    try:
+        s_write = wave.open(dst, 'wb')
+        s_write.setparams((outchannels, 2, outrate, 0, 'NONE', 'Uncompressed'))
+        s_write.writeframes(converted[0])
+    except Exception as e:
+        print(e)
+        print('Failed to write wav')
+        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
+        return False
+
+    try:
+        s_read.close()
+        s_write.close()
+    except:
+        print('Failed to close wav files')
+        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
+        return False
+
+    ok+=1
+    print(ok,'转换成功:',src, dst)
+    shutil.copyfile(path, outpath44100)  # 拷贝文件
+    return True
+
+
 
 def file_extension(path):
   return os.path.splitext(path)[1]
@@ -120,20 +179,19 @@ for file in filename:
             # print(i, '文件路径:' + path, outpath44100, outpath16000)
             # print("声道数:",nchannels)
             # print("量化位数:",sampwidth)
-            # print("输出文件:",outpath)
+            # print("输出文件:",outpath16000)
             # print("采样频率:",framerate)
             # print("采样点数:",nframes)
             #读取波形数据
             #读取声音数据，传递一个参数指定需要读取的长度（以取样点为单位）
             #str_data  = f.readframes(nframes)
             #print("声音数据:",len(str_data))
-            shutil.copyfile(path, outpath44100)  # 拷贝文件
             downsampleWav(path, outpath16000)
         f.close()
     except Exception:
         j+=1
-        shutil.copyfile(path, outpath44100_exception)  # 拷贝文件
-        #print(j,'异常文件:' + path,outpath44100,outpath16000)
+        # shutil.copyfile(path, outpath44100_exception)  # 拷贝文件
+        # print(j,'异常文件:' + path,outpath44100,outpath16000)
 print('-------------------------------------------------')
 # delete16000 = "E:\\raw\\44100_to_16000\\16000\\"
 # deleteNullFile(delete16000);
