@@ -81,7 +81,7 @@ def downsampleWav2_1(src, dst, inrate=44100, outrate=16000, inchannels=2, outcha
 
 
 # 若in和out都是单通道：
-def downsampleWav1_1(src, dst, inrate=44100, outrate=16000, inchannels=1, outchannels=1):
+def downsampleWav1_1(src, dst, inrate=48000, outrate=16000, inchannels=1, outchannels=1):
     global ok
     global fail
     import os, wave, audioop
@@ -97,7 +97,7 @@ def downsampleWav1_1(src, dst, inrate=44100, outrate=16000, inchannels=1, outcha
         # print(nchannels, sampwidth, framerate, nframes)
     except:
         print('Failed to open files!')
-        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
+        # shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
         return False
 
     n_frames = s_read.getnframes()
@@ -108,7 +108,7 @@ def downsampleWav1_1(src, dst, inrate=44100, outrate=16000, inchannels=1, outcha
             converted = audioop.tomono(converted[0], 2, 1, 0)
     except:
         print('Failed to downsample wav')
-        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
+        # shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
         return False
     try:
         s_write = wave.open(dst, 'wb')
@@ -117,7 +117,7 @@ def downsampleWav1_1(src, dst, inrate=44100, outrate=16000, inchannels=1, outcha
     except Exception as e:
         print(e)
         print('Failed to write wav')
-        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
+        # shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
         return False
 
     try:
@@ -125,12 +125,12 @@ def downsampleWav1_1(src, dst, inrate=44100, outrate=16000, inchannels=1, outcha
         s_write.close()
     except:
         print('Failed to close wav files')
-        shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
+        # shutil.copyfile(src, outpath1600_exception)  # 拷贝文件
         return False
 
     ok+=1
-    # print(ok,'转换成功:',src, dst)
-    shutil.copyfile(path, outpath44100)  # 拷贝文件
+    print(ok,'转换成功:',src, dst)
+    shutil.copyfile(path, dst)  # 拷贝文件
     return True
 
 
@@ -150,25 +150,29 @@ def del_file(path):
 
 
 # filepath = "chinese\\" #添加路径
-filepath = r"E:\\raw\\newRaw\\raw\\" #添加路径
+# filepath = r"E:\\raw\\newRaw\\raw\\" #添加路径
+filepath =  "E:\\raw\\转换后最新\\91_48000_24bit_to_48000_16bit\\" #添加路径
+
 filename= os.listdir(filepath) #得到文件夹下的所有文件名称
 i=0
 j=0
-del_file("E:\\raw\\44100_to_16000\\44100_exception\\")
-del_file("E:\\raw\\44100_to_16000\\44100\\")
-del_file("E:\\raw\\44100_to_16000\\16000\\")
-del_file("E:\\raw\\44100_to_16000\\16000_exception\\")
-del_file("E:\\raw\\44100_to_16000\\44100_exception_16000\\")
-
+# del_file("E:\\raw\\44100_to_16000\\44100_exception\\")
+# del_file("E:\\raw\\44100_to_16000\\44100\\")
+# del_file("E:\\raw\\44100_to_16000\\16000\\")
+# del_file("E:\\raw\\44100_to_16000\\16000_exception\\")
+# del_file("E:\\raw\\44100_to_16000\\44100_exception_16000\\")
+del_file("E:\\raw\\转换后最新\\91_48000_24bit_to_48000_16bit_16000_16bit\\")
 
 for file in filename:
     path = filepath+file
     filename =file.split(".")[0] #以“.”为分割点获取文件名
-    outpath44100_exception = "E:\\raw\\44100_to_16000\\44100_exception\\" + filename + ".wav"
-    outpath44100 = "E:\\raw\\44100_to_16000\\44100\\" + filename + ".wav"
-    outpath1600_exception = "E:\\raw\\44100_to_16000\\16000_exception\\" + filename + ".wav"
-    outpath16000 = "E:\\raw\\44100_to_16000\\16000\\" + filename + ".wav"
-    outpath44100_exception_16000 = "E:\\raw\\44100_to_16000\\44100_exception_16000\\" + filename + ".wav"
+    # outpath44100_exception = "E:\\raw\\44100_to_16000\\44100_exception\\" + filename + ".wav"
+    # outpath44100 = "E:\\raw\\44100_to_16000\\44100\\" + filename + ".wav"
+    # outpath1600_exception = "E:\\raw\\44100_to_16000\\16000_exception\\" + filename + ".wav"
+    # outpath16000 = "E:\\raw\\44100_to_16000\\16000\\" + filename + ".wav"
+    # outpath44100_exception_16000 = "E:\\raw\\44100_to_16000\\44100_exception_16000\\" + filename + ".wav"
+    outpath44100_exception_16000 = "E:\\raw\\转换后最新\\91_48000_24bit_to_48000_16bit_16000_16bit\\" + filename + ".wav"
+
     try:
         #打开wav文件 ，open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据。
         f = wave.open(path,"rb")
@@ -182,25 +186,25 @@ for file in filename:
         # print("采样频率:",framerate)
         # print("采样点数:",nframes)
         #常用的音频参数：nchannels:声道数sampwidth:量化位数（byte）framerate:采样频率nframes:采样点数
-        if framerate == 44100:
+        if sampwidth == 2:
             i+=1
             # print('------------',i,'-------------')
-            # print(i, '文件路径:' + path, outpath44100, outpath16000)
-            # print("声道数:",nchannels)
-            # print("量化位数:",sampwidth)
-            # print("输出文件:",outpath16000)
-            # print("采样频率:",framerate)
-            # print("采样点数:",nframes)
+            # print(i, '文件路径:' + path,outpath44100_exception_16000)
+            print("声道数:",nchannels)
+            print("量化位数:",sampwidth)
+            # # # print("输出文件:",outpath16000)
+            print("采样频率:",framerate)
+            print("采样点数:",nframes)
             #读取波形数据
             #读取声音数据，传递一个参数指定需要读取的长度（以取样点为单位）
             #str_data  = f.readframes(nframes)
             #print("声音数据:",len(str_data))
-            downsampleWav1_1(path, outpath16000)
+            # shutil.copyfile(path, outpath44100_exception_16000)  # 拷贝文件
+            # downsampleWav1_1(path, outpath44100_exception_16000,48000,16000,1,1)
         f.close()
     except Exception:
-        f.close()
         j+=1
-        shutil.copyfile(path, outpath44100_exception)  # 拷贝文件
+        # shutil.copyfile(path, outpath44100_exception)  # 拷贝文件
         print(j,'异常文件:' + path,outpath44100_exception_16000)
         # downsampleWav2_1(path, outpath44100_exception_16000)
 
