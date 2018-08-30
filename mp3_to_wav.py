@@ -53,9 +53,8 @@ for file in filename:
         print(j,"mp3:"+ path," mp3:",mp3file," wav:",wavfile)
         shutil.copyfile(path, mp3file) #拷贝文件
         #trans_mp3_to_wav(path,wavfile)
-        mp3_to_wav(path,wavfile)
-
-
+        # mp3_to_wav(path,wavfile)
+        trans_mp3_to_wav(path,wavfile)
         # try:
         #     #打开wav文件 ，open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据。
         #     f = wave.open(path,"rb")
