@@ -30,9 +30,7 @@ def getData(filepath):
     return waveData,time
 
 
-fileList=["raw_test\\f0000.wav",
-          "raw_test\\f0001.wav",
-          "raw_test\\f0002.wav",
+fileList=["raw_test\\f0002.wav",
           "raw_test\\f0003.wav"]
 
 index=1
@@ -41,14 +39,16 @@ for path in fileList:
     # print(path)
     result = getData(path)
     # print(result[1])
+    # print("len:",len(result[0]))
     waveData1 = result[0] * 128.0 / (max(abs(result[0])))  # wave幅值归一化
     plt.subplot(len(fileList),1,index)
+    plt.plot(result[1], waveData1)
     plt.xlabel("Time(s)")
     plt.ylabel("Amplitude")
     plt.title(path)
-    plt.grid('on')#标尺，on：有，off:无。
+    plt.grid('True')#标尺，on：有，off:无。
 
-    plt.plot(result[1],waveData1)
+
     # plt.scatter(result[1],waveData1, c='r', marker='o')# 画散点图
     # plt.legend('x1') # 设置图标
 
