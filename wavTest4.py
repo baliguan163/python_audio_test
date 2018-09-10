@@ -7,7 +7,7 @@ import pylab
 # import sys
 
 #打开WAV文档，文件路径根据需要做修改
-wf = wave.open("E:\\raw\\raw\\test\\m0000.wav", "rb")
+wf = wave.open("raw_test\\f0000.wav", "rb")
 
 #创建PyAudio对象
 p = pyaudio.PyAudio()
@@ -16,8 +16,7 @@ channels=wf.getnchannels(),
 rate=wf.getframerate(),output=True)
 nframes = wf.getnframes()
 framerate = wf.getframerate()
-#读取完整的帧数据到str_data中，这是一个string类型的数据
-str_data = wf.readframes(nframes)
+str_data = wf.readframes(nframes) #读取完整的帧数据到str_data中，这是一个string类型的数据
 wf.close()
 
 #将波形数据转换为数组

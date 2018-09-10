@@ -3,7 +3,8 @@ import numpy as np
 import pylab as plt
 
 #打开wav文件 ，open返回一个的是一个Wave_read类的实例，通过调用它的方法读取WAV文件的格式和数据。
-f = wave.open(r"testfile\m0000.wav","rb")
+f = wave.open(r"raw_test\f0000.wav","rb")
+
 #读取格式信息
 #一次性返回所有的WAV文件的格式信息，它返回的是一个组元(tuple)：声道数, 量化位数（byte单位）, 采
 #样频率, 采样点数, 压缩类型, 压缩类型的描述。wave模块只支持非压缩的数据，因此可以忽略最后两个信息
@@ -14,6 +15,8 @@ print("声道数:",nchannels)
 print("量化位数:",sampwidth)
 print("采样频率:",framerate)
 print("采样点数:",nframes)
+
+
 #读取波形数据
 #读取声音数据，传递一个参数指定需要读取的长度（以取样点为单位）
 str_data  = f.readframes(nframes)
@@ -24,8 +27,8 @@ f.close()
 wave_data = np.fromstring(str_data,dtype = np.short)
 #将wave_data数组改为2列，行数自动匹配。在修改shape的属性时，需使得数组的总长度不变。
 wave_data.shape = -1,2
-#转置数据
-wave_data = wave_data.T
+
+wave_data = wave_data.T #转置数据
 #通过取样点数和取样频率计算出每个取样的时间。
 time=np.arange(0,nframes)/framerate
 #print(params)
