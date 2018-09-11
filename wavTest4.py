@@ -34,7 +34,7 @@ pylab.subplot(212)
 pylab.plot(time, wave_data[1], c="g")
 pylab.xlabel("time (seconds)")
 pylab.show()
-#
+
 # 采样点数，修改采样点数和起始位置进行不同位置和长度的音频波形分析
 N=44100
 start=0 #开始采样位置
